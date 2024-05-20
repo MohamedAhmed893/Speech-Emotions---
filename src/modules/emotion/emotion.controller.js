@@ -19,6 +19,12 @@ const emotion=response.data.result
   }
   )
 
+const enterEmotions=catchAsyncError(async (req,res,next)=>{
+  const record = new Record({ userId:req.body.userId,emotion, date: new Date() });
+  await  record.save();
+  res.status(200).json({message:"success",emotion })
+})
+
 const getHistoryDay =catchAsyncError( async (req, res,next) => {
    
    let {userId}  = req.params;
@@ -230,6 +236,7 @@ const getHistoryYear = catchAsyncError(async (req, res) => {
 
 export {
     enterRecord ,
+    enterEmotions ,
     getHistoryDay ,
     getHistoryMonth ,
     getHistoryWeek ,

@@ -116,9 +116,6 @@ let forgetPassword = catchAsyncError(async (req, res) => {
         return res.status(404).json({message:'User not found'});
     }
 
-    // // Generate a random token
-    // const token = crypto.randomBytes(20).toString('hex');
-    // user.resetToken = token;
     let token = jwt.sign({ email: email }, process.env.KEY_SEQERT_RESET)
     // Create a Nodemailer transporter
     const transporter = createTransport({
