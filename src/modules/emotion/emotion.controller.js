@@ -20,7 +20,8 @@ const emotion=response.data.result
   )
 
 const enterEmotions=catchAsyncError(async (req,res,next)=>{
-  const record = new Record({ userId:req.body.userId,emotion:req.body.emotion, date: new Date() });
+  const {emotion}=req.body
+  const record = new Record({ userId:req.user._id,emotion, date: new Date() });
   await  record.save();
   res.status(200).json({message:"success",emotion })
 })
