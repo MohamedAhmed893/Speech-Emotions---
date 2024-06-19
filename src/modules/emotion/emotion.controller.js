@@ -4,6 +4,7 @@ import { AppError } from "../../utils/AppError.js";
 import axios from "axios";
 import FormData from "form-data";
 import fs from 'fs';
+
 const enterRecord = catchAsyncError(async (req, res ,next) => {
   req.body.userId =req.user._id
 const baseUrl ='http://ec2-34-200-78-89.compute-1.amazonaws.com:8000/predict'
@@ -19,12 +20,30 @@ const emotion=response.data.result
   }
   )
 
-const enterEmotions=catchAsyncError(async (req,res,next)=>{
-  const {emotion}=req.body
-  const record = new Record({ userId:req.user._id,emotion, date: new Date() });
-  await  record.save();
-  res.status(200).json({message:"success",emotion })
-})
+
+const enterEmotions = catchAsyncError(async (req, res, next) => {
+  if (!req.body || !req.body.text) {
+    return res.status(400).json({ message: "Bad Request: 'text' is required in the request body" });
+  }
+
+  const baseUrl = 'http://radyhaggag.pythonanywhere.com/predict';
+  const form = new FormData();
+  form.append('text', req.body.text);
+
+  try {
+    const response = await axios.post(baseUrl, form, {
+      headers: {
+        ...form.getHeaders()
+      }
+    });
+    const emotion = response.data.sentiment;
+    res.status(200).json({ message: "success", emotion });
+  } catch (error) {
+    console.error("Error in enterEmotions:", error.message);
+    next(error);
+  }
+});
+
 
 const getHistoryDay =catchAsyncError( async (req, res,next) => {
    
